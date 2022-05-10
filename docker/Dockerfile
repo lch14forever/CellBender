@@ -26,15 +26,20 @@ RUN conda install -y pytorch torchvision cudatoolkit -c pytorch \
 
 ENV DOCKER='true'
 
-RUN git clone https://github.com/broadinstitute/CellBender.git cellbender \
- && yes | pip install -e cellbender \
- && sudo rm -rf ~/.cache/pip
+#RUN git clone https://github.com/broadinstitute/CellBender.git cellbender \
+# && yes | pip install -e cellbender \
+# && sudo rm -rf ~/.cache/pip
+ 
+RUN mkdir cellbender
+COPY . cellbender/
+RUN pip install -e cellbender && sudo rm -rf ~/.cache/pip
+
 
 # google cloud SDK and gsutil
-RUN curl -sSL https://sdk.cloud.google.com | bash
-RUN conda install -y -c conda-forge google-api-python-client oauth2client google-auth \
- google-cloud-sdk google-auth-oauthlib \
- && conda clean -ya
+#RUN curl -sSL https://sdk.cloud.google.com | bash
+#RUN conda install -y -c conda-forge google-api-python-client oauth2client google-auth \
+# google-cloud-sdk google-auth-oauthlib \
+# && conda clean -ya
 
 # Add cellbender command to PATH
 ENV PATH="~/miniconda/bin:${PATH}"

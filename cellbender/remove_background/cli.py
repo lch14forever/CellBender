@@ -43,6 +43,10 @@ class CLI(AbstractCLI):
         if args.expected_cell_count is not None:
             assert args.expected_cell_count > 0, \
                 "expected_cells must be an integer greater than zero."
+ 
+        if args.expected_empty_count is not None:
+            assert args.expected_empty_count > 0, \
+                "expected_empty_count must be an integer greater than zero."
 
         # If additional barcodes are specified, they must be specified for
         # all files.
@@ -150,6 +154,7 @@ def run_remove_background(args):
         dataset_obj = \
             SingleCellRNACountsDataset(input_file=args.input_file,
                                        expected_cell_count=args.expected_cell_count,
+                                       expected_empty_count=args.expected_empty_count,
                                        total_droplet_barcodes=args.total_droplets,
                                        fraction_empties=args.fraction_empties,
                                        model_name=args.model,

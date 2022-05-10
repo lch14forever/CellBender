@@ -68,6 +68,7 @@ class SingleCellRNACountsDataset:
                  low_count_threshold: int,
                  fpr: List[float],
                  expected_cell_count: Optional[int] = None,
+                 expected_empty_count: Optional[int] = None,
                  total_droplet_barcodes: int = consts.TOTAL_DROPLET_DEFAULT,
                  fraction_empties: Optional[float] = None,
                  gene_blacklist: List[int] = []):
@@ -83,7 +84,9 @@ class SingleCellRNACountsDataset:
         self.fraction_empties = fraction_empties
         self.is_trimmed = False
         self.low_count_threshold = low_count_threshold
-        self.priors = {'n_cells': expected_cell_count}  # Expected cells could be None.
+        self.priors = {'n_cells': expected_cell_count, \
+                       'expected_empty_count': expected_empty_count 
+                       } # Expected cells could be None.
         self.posterior = None
         self.fpr = fpr
         self.random = np.random.RandomState(seed=1234)
@@ -1428,14 +1431,18 @@ def get_d_priors_from_dataset(dataset: SingleCellRNACountsDataset) \
 
         # Cutoff for original data.  Empirical.
         cut = dataset.low_count_threshold
+        if dataset.priors['expected_empty_count'] is None:
 
-        # Estimate the number of UMI counts in empty droplets.
+            # Estimate the number of UMI counts in empty droplets.
 
-        # Mode of (rounded) log counts (for counts > cut) is a robust
-        # empty estimator.
-        empty_log_counts = mode(np.round(np.log1p(counts[counts > cut]),
-                                         decimals=1))[0]
-        empty_counts = int(np.expm1(empty_log_counts).item())
+            # Mode of (rounded) log counts (for counts > cut) is a robust
+            # empty estimator.
+            empty_log_counts = mode(np.round(np.log1p(counts[counts > cut]),
+                                             decimals=1))[0]
+            empty_counts = int(np.expm1(empty_log_counts).item())
+        else:
+            # just use provided
+            empty_counts = dataset.priors['expected_empty_count']
 
         # Estimate the number of UMI counts in cells.
 

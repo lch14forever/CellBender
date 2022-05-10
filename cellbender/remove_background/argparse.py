@@ -45,6 +45,12 @@ def add_subparser_args(subparsers: argparse) -> argparse:
                            help="Number of cells expected in the dataset "
                                 "(a rough estimate within a factor of 2 "
                                 "is sufficient).")
+    subparser.add_argument("--expected-empty-count", nargs=None, type=int,
+                           default=None,
+                           dest="expected_empty_count",
+                           help="Expected number of counts in empty cells "
+                                "(useful for Visium data with spots without"
+                                " tissue).")
     subparser.add_argument("--total-droplets-included",
                            nargs=None, type=int,
                            default=consts.TOTAL_DROPLET_DEFAULT,
